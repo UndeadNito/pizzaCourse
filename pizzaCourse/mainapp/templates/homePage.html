@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+{% for product in products_list%}
+<div class="col mb-5">
+    <div class="card h-100" title="{{product.description}}">
+        <!-- Product image-->
+        <img class="card-img-top" src="{{product.image.url}}" alt="..." />
+        <!-- Product details-->
+        <div class="card-body p-4">
+            <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder">{{product.title}}</h5>
+                <!-- Product price-->
+                {{product.price}}₽
+            </div>
+        </div>
+        <!-- Product actions-->
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+            <a href="{% url 'add_to_cart' product_id=product.id %}"><button class="btn btn-outline-dark mt-auto" ">Add to cart</button></a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock content %}

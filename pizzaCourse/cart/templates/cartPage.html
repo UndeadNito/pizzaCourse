@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for product, image, title in cart%}
+<div class="col mb-5">
+    <div class="card h-100" title="{{product.object.description}}">
+        <!-- Product image-->
+        <img class="card-img-top" src="{{ image.url }}" alt="..." />
+        <!-- Product details-->
+        <div class="card-body p-4">
+            <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder">{{title}}</h5>
+                <!-- Product price-->
+                {{product.object.price}}₽  x  {{product.quantity}}
+            </div>
+        </div>
+        <!-- Product actions-->
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent text-center">
+            <a href="{% url 'plus_1' product_id=product.object_id quantity=product.quantity%}"><button class="btn btn-outline-dark mt-auto">+</button></a>
+            <a href="{% url 'remove_from_cart' product_id=product.object_id %}"><button class="btn btn-outline-dark mt-auto">Remove</button></a>
+            <a href="{% url 'minus_1' product_id=product.object_id quantity=product.quantity%}"><button class="btn btn-outline-dark mt-auto">-</button></a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+</div>
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-white">
+            <form method="POST" action="{% url 'order' %}">
+                {% csrf_token %}
+                <div class="container row row-cols-3">
+                    <div class="col">
+                        <div class="text-end">
+                            <text class="mb-2">Name: </text><input class="mb-2" name="customer_name" value=""><br>
+                            <text class="mb-2">Phone: </text><input class="mb-2" name="customer_number" value=""><br>
+                            <text class="mb-2">Address: </text><input class="mb-2" name="customer_address" value="">
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col text-center">
+                        <button class="btn btn-outline-light mb-5"> Order </button><br>
+                        <text>Final price: </text> {{ final_price }} ₽
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div>
+
+{% endblock content%}
