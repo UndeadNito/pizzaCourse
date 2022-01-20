@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+{% for product, image, title in cart%}
+    <div class="col mb-5">
+        <div class="card h-100" title="{{product.object.description}}">
+            <!-- Product image-->
+            <img class="card-img-top" src="{{ image.url }}" alt="..." />
+             <!-- Product details-->
+            <div class="card-body p-4">
+                <div class="text-center">
+                    <!-- Product name-->
+                    <h5 class="fw-bolder">{{title}}</h5>
+                    <!-- Product price-->
+                    {{product.object.price}}₽  x  {{product.quantity}}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+</div>
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-white text-center">
+            <h2>{{customer.customer_name}}, your order in process</h2><br>
+            <h5>delivery address: {{customer.customer_address}}</h5><br>
+        </div>
+    </div>
+</header>
+
+<div>
+
+{% endblock content%}

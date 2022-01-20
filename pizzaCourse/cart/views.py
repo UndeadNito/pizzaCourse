@@ -52,35 +52,58 @@ def minus_1(request, **kwargs):
 
 
 def order(request):
-    if 'customer_name' in request.POST and 'customer_number' in request.POST and 'customer_address' in request.POST:
+    if 'customer_name' in request.POST \
+            and 'customer_number' in request.POST \
+            and 'customer_address' in request.POST \
+            and request.POST['customer_number'].isdigit():
+
         customer = Customer.objects.filter(
-                customer_name=request.POST['customer_name'],
-                customer_number=request.POST['customer_number'],
-                customer_address=request.POST['customer_address']
+            customer_name=request.POST['customer_name'],
+            customer_number=request.POST['customer_number'],
+            customer_address=request.POST['customer_address']
         )
 
-        if not customer.exists():
-            customer = Customer(
-                customer_name=request.POST['customer_name'],
-                customer_number=request.POST['customer_number'],
-                customer_address=request.POST['customer_address']
-            )
-            customer.save()
+        if Cart(request).cart.item_set.all().exists(): #vuln place
+            if not customer.exists():
+                customer = Customer(
+                    customer_name=request.POST['customer_name'],
+                    customer_number=request.POST['customer_number'],
+                    customer_address=request.POST['customer_address']
+                )
+                customer.save()
 
-        cart = Cart(request)
-        if OrderList.objects.exists():
-            last_order_id = OrderList.objects.last().order_id
-        else:
-            last_order_id = 0
+            cart = Cart(request)
+            if OrderList.objects.exists():
+                last_order_id = OrderList.objects.last().order_id
+            else:
+                last_order_id = 0
 
-        for item in cart.cart.item_set.all():
-            item_for_order = OrderList(
-                order_id=last_order_id + 1,
-                customer=customer.first(),
-                product=item.object,
-                quantity=item.quantity
-            )
-            item_for_order.save()
+            for item in cart.cart.item_set.all():
+                item_for_order = OrderList(
+                    order_id=last_order_id + 1,
+                    customer=customer.first(),
+                    product=item.object,
+                    quantity=item.quantity
+                )
+                item_for_order.save()
+
     else:
+        print('error')
         return redirect('/cart/', {'error': 'No customer data'})
-    return redirect('/cart/')
+    return orderAdd(request, customer)
+
+
+def orderAdd(request, customer):
+    cart = Cart(request)
+    final_set = []
+    product_queryset = Product.objects.all()
+    for product in cart.cart.item_set.all():
+        image = product_queryset.filter(id=product.object.id).first().image
+        title = product_queryset.filter(id=product.object.id).first().title
+        final_set.append([product, image, title])
+    final_price = cart.summary()
+    return render(request, 'orderAdd.html', {'cart': final_set,
+                                             'final_price': final_price,
+                                             'customer': customer.first()})
+
+
