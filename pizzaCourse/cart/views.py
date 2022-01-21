@@ -63,8 +63,11 @@ def order(request):
             customer_address=request.POST['customer_address']
         )
 
+        customer_exists = customer.exists()
+        customer = customer.first()
+
         if Cart(request).cart.item_set.all().exists(): #vuln place
-            if not customer.exists():
+            if not customer_exists:
                 customer = Customer(
                     customer_name=request.POST['customer_name'],
                     customer_number=request.POST['customer_number'],
@@ -81,7 +84,7 @@ def order(request):
             for item in cart.cart.item_set.all():
                 item_for_order = OrderList(
                     order_id=last_order_id + 1,
-                    customer=customer.first(),
+                    customer=customer,
                     product=item.object,
                     quantity=item.quantity
                 )
@@ -102,8 +105,9 @@ def orderAdd(request, customer):
         title = product_queryset.filter(id=product.object.id).first().title
         final_set.append([product, image, title])
     final_price = cart.summary()
+    print(customer)
     return render(request, 'orderAdd.html', {'cart': final_set,
                                              'final_price': final_price,
-                                             'customer': customer.first()})
+                                             'customer': customer})
 
 
